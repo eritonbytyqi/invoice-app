@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JM COPERTURE - Faturë Profesionale</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --dark-color: #1e293b;
+            --bg-body: #f1f5f9;
+        }
+
+        body { 
+            background-color: var(--bg-body); 
+            font-family: 'Inter', sans-serif; 
+            color: var(--dark-color);
+        }
+
+        .invoice-box { 
+            background: #ffffff; 
+            padding: 50px; 
+            border-radius: 24px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255,255,255,0.8);
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Header Style */
+        .invoice-header { 
+            border-bottom: 2px solid #f8fafc;
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .company-name {
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: var(--primary-color);
+            font-size: 2rem;
+        }
+
+        /* Inputs & Controls */
+        .form-control, .form-select {
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .client-display { 
+            background: #f8fafc; 
+            padding: 25px; 
+            border-radius: 16px; 
+            border-left: 5px solid var(--primary-color);
+            margin-bottom: 30px;
+        }
+
+        /* Table Style */
+        .table-responsive { border-radius: 16px; overflow: hidden; }
+        .table { margin-bottom: 0; }
+        .table thead { 
+            background: var(--dark-color); 
+            color: white; 
+        }
+        .table thead th { 
+            padding: 18px; 
+            font-weight: 500; 
+            text-transform: uppercase; 
+            font-size: 0.8rem; 
+            letter-spacing: 0.5px;
+            border: none;
+        }
+        .table tbody td { padding: 15px 18px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; }
+
+        /* Totals */
+        .total-box { 
+            background: var(--dark-color); 
+            color: white;
+            border-radius: 16px; 
+            padding: 25px;
+            margin-top: 20px;
+        }
+        .total-final { font-size: 1.8rem; font-weight: 700; color: #fff; }
+
+        /* Buttons */
+        .btn-modern { 
+            border-radius: 12px; 
+            padding: 12px 25px; 
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-primary { background: var(--primary-color); border: none; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3); }
+        
+        .btn-success { background: var(--success-color); border: none; }
+        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); }
+
+        .btn-add-manual {
+            background: #f1f5f9;
+            color: var(--secondary-color);
+            border: 1px dashed #cbd5e1;
+        }
+
+        /* Print Settings */
+   @media print {
+
+    @page {
+        size: A4;
+        margin: 15mm;
+    }
+
+    body {
+        background: white !important;
+        padding: 0 !important;
+    }
+
+    .invoice-box {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .no-print,
+    .d-print-none,
+    .btn-modern {
+        display: none !important;
+    }
+
+    .invoice-header {
+        margin-bottom: 15px !important;
+        padding-bottom: 15px !important;
+    }
+
+    .client-display {
+        margin-bottom: 15px !important;
+        padding: 15px !important;
+        background: white !important;
+        border: 1px solid #ddd !important;
+    }
+
+    .table thead {
+        background: #eee !important;
+        color: black !important;
+    }
+
+    .table thead th,
+    .table tbody td {
+        padding: 8px !important;
+        font-size: 12px !important;
+    }
+
+    .total-box {
+        background: white !important;
+        color: black !important;
+        padding: 15px !important;
+        margin-top: 10px !important;
+        border-top: 2px solid black !important;
+    }
+
+    .total-final {
+        color: black !important;
+        font-size: 16px !important;
+    }
+
+    /* Mos e lejo me u nda tabela në dy faqe */
+    table {
+        page-break-inside: avoid;
+    }
+
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+}
+    </style>
+</head>
+<body class="container py-4">
+
+<div class="invoice-box">
+
+    <div class="mb-4 no-print text-end">
+        <label class="small fw-bold me-2 text-secondary">LANGUAGE / GJUHA:</label>
+        <select id="languageSelect" class="form-select w-auto d-inline shadow-sm">
+            <option value="sq">Shqip 🇦🇱</option>
+            <option value="it">Italiano 🇮🇹</option>
+            <option value="en">English 🇬🇧</option>
+        </select>
+    </div>
+<div class="text-center mb-3">
+    <img src="logo.jpg.jpg"
+         alt="Logo"
+         style="max-height:80px;"
+         onerror="this.style.display='none'">
+</div> 
+    <div class="invoice-header row align-items-center">
+        <div class="col-md-6 text-center text-md-start">
+           <!-- <div class="company-name">JM COPERTURE</div> -->
+            <p class="text-secondary mb-0">
+                <span class="d-block">📞 3278529103</span>
+                <span class="d-block">✉️ jeton.kozhani@icloud.com</span>
+            </p>
+        </div>
+        <div class="col-md-6 text-center text-md-end mt-4 mt-md-0">
+            <h2 class="fw-bold text-uppercase mb-1" id="invoiceTitle" style="letter-spacing: 2px;">FATURË</h2>
+            <div class="badge bg-light text-dark border p-2 px-3 mb-2">P.Iva 04510060983</div>
+            <div class="text-secondary small">
+                <strong>Data:</strong> <span id="date" class="text-dark"></span>
+            </div>
+        </div>
+    </div>
+
+<div class="row gx-3 gy-2 no-print bg-light p-3 rounded-4">
+    <div class="col-md-6">
+        <label class="form-label fw-semibold small" id="labelClientName">Emri i Klientit</label>
+        <input type="text" id="clientName" class="form-control shadow-sm" placeholder="..." oninput="updateClient()">
+    </div>
+    <div class="col-md-6">
+        <label class="form-label fw-semibold small" id="labelClientAddress">Adresa e Klientit</label>
+        <input type="text" id="clientAddress" class="form-control shadow-sm" placeholder="..." oninput="updateClient()">
+    </div>
+</div>
+
+<div class="client-display shadow-sm p-3 rounded-4 mb-3">
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
+        <div class="me-3 flex-grow-1">
+            <small class="text-uppercase text-secondary fw-semibold d-block mb-1" id="labelClientDisplay">Klienti:</small>
+            <h5 id="displayName" class="fw-bold mb-0">-</h5>
+        </div>
+        <div class="text-md-end flex-grow-1">
+            <small class="text-uppercase text-secondary fw-semibold d-block mb-1" id="labelAddressDisplay">Adresa:</small>
+            <span id="displayAddress" class="text-muted">-</span>
+        </div>
+    </div>
+</div>
+
+    <div class="p-4 border rounded-4 mb-4 no-print shadow-sm">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label fw-bold small" id="labelSelectProduct">Produkti ekzistues:</label>
+             <div class="dropdown w-100">
+    <button class="form-select text-start" type="button" data-bs-toggle="dropdown" id="productDropdown">
+        Zgjidh produktin...
+    </button>
+    <ul class="dropdown-menu w-100" id="productList"></ul>
+</div>
+                <input type="text" id="manualProduct" class="form-control mb-2" placeholder="Shto produkt të ri">
+                <button class="btn btn-sm btn-add-manual w-100" onclick="addManualProduct()" id="btnAddManual">Shto në listë</button>
+            </div>
+           
+            <div class="col-md-2">
+                <label class="form-label fw-bold small">Çmimi</label>
+                <input type="number" id="price" class="form-control" placeholder="0.00">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-bold small">Sasia</label>
+                <input type="number" id="quantity" class="form-control" placeholder="0">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-bold small">Njësia</label>
+                <select id="unit" class="form-select">
+                    <option value="">-</option>
+                    <option value="m²">m²</option>
+                    <option value="copë">Copë</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button class="btn btn-primary btn-modern w-100" onclick="addProduct()" id="btnAddProduct">Shto</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive shadow-sm mb-4">
+        <table class="table table-hover align-middle" id="invoiceTable">
+            <thead>
+                <tr>
+                    <th id="thProduct" style="width: 40%;">Produkti</th>
+                    <th id="thPrice">Çmimi</th>
+                    <th id="thQuantity">Sasia</th>
+                    <th id="thTotal">Totali</th>
+                    <th id="thActions" class="d-print-none"></th>
+                </tr>
+            </thead>
+            <tbody id="invoiceBody">
+                <script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+}
+</script>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row justify-content-end">
+        <div class="col-md-5">
+            <div class="total-box shadow">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-uppercase fw-bold opacity-75" id="labelTotalFinal">Totali Final</span>
+                    <strong id="grandTotal" class="total-final">0 €</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-5 no-print">
+        <button onclick="window.print()" class="btn btn-success btn-modern px-5 shadow">
+            <span class="me-2">🖨️</span> <span id="btnPrint">Printo Faturën</span>
+        </button>
+    </div>
+
+</div>
+
+<script>
+ 
+
+
+// Logjika mbetet e njejte si ne kodin tend fillestar
+let grandTotal = 0;
+let currentLang = 'sq';
+
+const lang = {
+    sq: { clientName: "Emri i Klientit", clientAddress: "Adresa e Klientit", clientDisplay: "Klienti:", addressDisplay: "Adresa:", selectProduct: "Zgjidh produktin...", addManual: "Shto në listë", addProduct: "Shto në faturë", invoice: "Faturë", totalFinal: "Totali Final", print: "Printo Faturën", thProduct: "Produkti", thPrice: "Çmimi", thQuantity: "Sasia", thTotal: "Totali", thActions: "Veprime", delete: "Fshi" },
+    it: { clientName: "Nome Cliente", clientAddress: "Indirizzo Cliente", clientDisplay: "Cliente:", addressDisplay: "Indirizzo:", selectProduct: "Seleziona prodotto...", addManual: "Aggiungi alla lista", addProduct: "Aggiungi alla fattura", invoice: "Fattura", totalFinal: "Totale Finale", print: "Stampa Fattura", thProduct: "Prodotto", thPrice: "Prezzo", thQuantity: "Quantità", thTotal: "Totale", thActions: "Azioni", delete: "Elimina" },
+    en: { clientName: "Client Name", clientAddress: "Client Address", clientDisplay: "Client:", addressDisplay: "Address:", selectProduct: "Select product...", addManual: "Add to list", addProduct: "Add to invoice", invoice: "Invoice", totalFinal: "Grand Total", print: "Print Invoice", thProduct: "Product", thPrice: "Price", thQuantity: "Quantity", thTotal: "Total", thActions: "Actions", delete: "Delete" }
+};
+
+const productNames = {
+    "Rimozione Coppi Onduline Fodre e Travi Vecchie": { sq:"Heqja e Tavanit dhe Trarëve të Vjetër", it:"Rimozione Coppi Onduline Fodre e Travi Vecchie", en:"Removal of Old Roof Tiles and Beams" },
+    "Rimozione Lattonerie Vecchie": { sq:"Heqja e Latonierive të Vjetra", it:"Rimozione Lattonerie Vecchie", en:"Removal of Old Sheet Metal" },
+    "Fornitura di Travi Nuovi": { sq:"Furnizim i Trarëve të Rinjtë", it:"Fornitura di Travi Nuovi", en:"Supply of New Beams" }
+};
+
+function changeLanguage(langCode) { currentLang = langCode; translatePage(); recalcTotal(); }
+
+function translatePage() {
+    document.getElementById('labelClientName').innerText = lang[currentLang].clientName;
+    document.getElementById('labelClientAddress').innerText = lang[currentLang].clientAddress;
+    document.getElementById('labelClientDisplay').innerText = lang[currentLang].clientDisplay;
+    document.getElementById('labelAddressDisplay').innerText = lang[currentLang].addressDisplay;
+    document.getElementById('productSelect').options[0].text = lang[currentLang].selectProduct;
+    document.getElementById('btnAddManual').innerText = lang[currentLang].addManual;
+    document.getElementById('btnAddProduct').innerText = lang[currentLang].addProduct;
+    document.getElementById('invoiceTitle').innerText = lang[currentLang].invoice;
+    document.getElementById('labelTotalFinal').innerText = lang[currentLang].totalFinal;
+    document.getElementById('btnPrint').innerText = lang[currentLang].print;
+    document.getElementById('thProduct').innerText = lang[currentLang].thProduct;
+    document.getElementById('thPrice').innerText = lang[currentLang].thPrice;
+    document.getElementById('thQuantity').innerText = lang[currentLang].thQuantity;
+    document.getElementById('thTotal').innerText = lang[currentLang].thTotal;
+}
+
+window.onload = function() {
+    translatePage();
+     loadProductsFromStorage();
+     renderProductList();
+    document.getElementById("date").innerText = new Date().toLocaleDateString(currentLang);
+    document.getElementById("invoiceNumber").innerText = "INV-" + Math.floor(Math.random()*10000);
+};
+document.addEventListener("DOMContentLoaded", function () {
+    renderProductList();
+});
+function updateClient() {
+    document.getElementById("displayName").innerText = document.getElementById("clientName").value || "-";
+    document.getElementById("displayAddress").innerText = document.getElementById("clientAddress").value || "-";
+}
+
+function addManualProduct() {
+    let manual = document.getElementById("manualProduct").value.trim();
+    if (!manual) return;
+
+    let products = JSON.parse(localStorage.getItem("invoiceProducts")) || [];
+
+    if (!products.includes(manual)) {
+        products.push(manual);
+        localStorage.setItem("invoiceProducts", JSON.stringify(products));
+    }
+
+    document.getElementById("manualProduct").value = "";
+    renderProductList();
+}
+function addProduct() {
+    let product = document.getElementById("productDropdown").innerText;
+
+    if (product === "Zgjidh produktin...") {
+        alert("Zgjidh produktin!");
+        return;
+    }
+
+    let price = parseFloat(document.getElementById("price").value) || 0;
+    let quantity = parseFloat(document.getElementById("quantity").value) || 0;
+    let unit = document.getElementById("unit").value;
+
+    let tr = document.createElement("tr");
+    tr.innerHTML = `
+        <td class="fw-medium">${product}</td>
+        <td contenteditable="true">${price ? price.toFixed(2) : "-"}</td>
+        <td contenteditable="true">${quantity ? quantity + (unit ? " " + unit : "") : "-"}</td>
+        <td class="fw-bold text-primary">-</td>
+        <td class="d-print-none text-end">
+            <button class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">Fshi</button>
+        </td>
+    `;
+
+    document.getElementById("invoiceBody").appendChild(tr);
+
+    tr.querySelectorAll('td[contenteditable="true"]').forEach(td => {
+        td.addEventListener('input', recalcTotal);
+        td.addEventListener('blur', recalcTotal);
+    });
+
+    recalcTotal();
+
+    document.getElementById("price").value = "";
+    document.getElementById("quantity").value = "";
+    document.getElementById("unit").value = "";
+}
+
+function removeRow(btn) {
+    btn.closest("tr").remove();
+    recalcTotal();
+}
+
+function recalcTotal() {
+    grandTotal = 0;
+    let rows = document.querySelectorAll("#invoiceBody tr");
+    rows.forEach(row => {
+        let priceCell = row.cells[1].innerText.replace(/[^\d.,]/g,'').replace(',', '.');
+        let qtyCell = row.cells[2].innerText.replace(/[^\d.,]/g,'').replace(',', '.');
+
+        let price = parseFloat(priceCell) || 0;
+        let quantity = parseFloat(qtyCell) || 0;
+        let total = price * quantity;
+        row.cells[3].innerText = total ? total.toFixed(2) + " €" : "-";
+        grandTotal += total;
+    });
+    document.getElementById("grandTotal").innerText = grandTotal.toLocaleString(currentLang, { style: 'currency', currency: 'EUR' });
+}
+
+document.getElementById('languageSelect').addEventListener('change', function() {
+    changeLanguage(this.value);
+});
+function renderProductList() {
+    let list = document.getElementById("productList");
+    list.innerHTML = "";
+
+    let products = JSON.parse(localStorage.getItem("invoiceProducts")) || [];
+
+    products.forEach(product => {
+        let li = document.createElement("li");
+        li.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center px-3 py-2">
+                <span style="cursor:pointer;" onclick="selectProduct('${product}')">
+                    ${product}
+                </span>
+                <span style="cursor:pointer; color:red;"
+                      onclick="deleteProduct('${product}')">
+                    🗑️
+                </span>
+            </div>
+        `;
+        list.appendChild(li);
+    });
+}
+function selectProduct(product) {
+    document.getElementById("productDropdown").innerText = product;
+}
+function deleteProduct(product) {
+    let products = JSON.parse(localStorage.getItem("invoiceProducts")) || [];
+    products = products.filter(p => p !== product);
+
+    localStorage.setItem("invoiceProducts", JSON.stringify(products));
+    renderProductList();
+}
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
